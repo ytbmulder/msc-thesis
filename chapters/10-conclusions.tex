@@ -1,0 +1,26 @@
+\chapter{Conclusions}
+
+A new class of accelerator interfaces has significant implications on system architecture. An order of magnitude more bandwidth forces us to reconsider FPGA design. Naively scaling the interconnect will become a bottleneck due to the traditional IO model, but also because traditional solutions are unfit. New standards are required to provide a shared memory space with the IO, and extend the coherence domain of the host processor.
+
+Therefore, OpenCAPI is of interest due to the coherent, high-bandwidth and low-latency interconnect it provides. Such an interconnect enables tightly coupled FPGAs in the data center. This allows for acceleration of emerging workloads and new usage models. Since very little public information about OpenCAPI is available, an overview of the interface is provided for those who want to gain a better understanding of it.
+
+In this work, feeding such emerging FPGA accelerators is studied by generalizing across multiple common streaming-based access patterns and providing a data element granularity interface with multiple read ports, instead of a typical cache line granularity interface.
+%Streaming and similar access patterns are common for FPGA accelerators. 
+In order to fully utilize the available bandwidth, multiple streams are required. Buffering cache lines under OpenCAPI assumptions requires re-evaluation of traditional solutions and approaches. The proposed architecture exploits different memory primitives available on the latest generation of Xilinx FPGAs. By combining a traditional multi-read port approach for data duplication with a second level of buffering, a hierarchy typically found in caches, an architecture is proposed which can supply data from 64 streams to eight read ports without any access pattern restrictions.
+
+A correct-by-construction design methodology was used to simplify the validation of the design and to speedup the implementation phase. At the same time, the design methodology is documented and examples are provided for ease of adoption. With the design methodology, the proposed architecture has been implemented and is accompanied by a validation framework.
+
+The Vivado toolchain was used for synthesis and implementation using the out-of-context mode. Various configurations of the multi-stream buffer have been tested. Configurations up to 64 streams with four read ports meet timing with an AFU request-to-response latency of five cycles. The largest configuration with 64 streams and eight read ports fails timing.\\
+Limiting factors are the inherent architecture of FPGAs, where memories are physically located in specific columns. This makes extracting data complex, especially at the target frequencies of \SI{200}{\mega\hertz} and \SI{400}{\mega\hertz}. Wires are scattered across the FPGA and wire delay becomes dominant.
+
+\newpage
+FPGA design at increasing bandwidths requires new design approaches. Synthesis results are no guarantee for the implemented design, and depending on the design size, could indicate a very optimistic operating frequency. Therefore, designing accelerators to keep up with an order of magnitude more bandwidth compared to the current state-of-the-art is complex, and requires carefully thought out accelerator cores, combined with an interface capable of feeding it.
+
+%\todo{
+%- Interesting remark from Brad Benton talk: Bigger change is attaching storage, since the interconnects are targeting DRAM-like latency and bandwidth. Also allows for novel architectures such as PIM (process in memory).\\
+%}
+
+%\todo{Future work:\\
+%- Add ECC to BRAM and URAMs.\\
+%- Future work: weighted RR MUX to fight address translation misses. See: \url{http://www.rtlery.com/components/ppc-based-weighted-work-conserving-round-robin-arbiter}\\
+%}

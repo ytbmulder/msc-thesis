@@ -1,0 +1,63 @@
+\chapter*{Abstract}
+
+A new class of accelerator interfaces has significant implications on system architecture. An order of magnitude more bandwidth forces us to reconsider FPGA design. OpenCAPI is a new interconnect standard that enables attaching FPGAs coherently to a high-bandwidth, low-latency interface. Keeping up with this bandwidth poses new challenges for the design of accelerators, and the logic feeding them.
+
+This thesis is conducted as part of a group project, where three other master students investigate database operator accelerators. This thesis focuses on the logic to feed the accelerators, by designing a reconfigurable multi-stream buffer architecture. By generalizing across multiple common streaming-like accelerator access patterns, an interface consisting of multiple read ports with a smaller than cache line granularity is desired. At the same time, multiple read ports are allowed to request any stream, including reading across a cache line boundary.
+
+The proposed architecture exploits different memory primitives available on the latest generation of Xilinx FPGAs. By combining a traditional multi-read port approach for data duplication with a second level of buffering, a hierarchy typically found in caches, an architecture is proposed which can supply data from 64 streams to eight read ports without any access pattern restrictions.
+
+A correct-by-construction design methodology was used to simplify the validation of the design and to speedup the implementation phase. At the same time, the design methodology is documented and examples are provided for ease of adoption. With the design methodology, the proposed architecture has been implemented and is accompanied by a validation framework.
+
+Various configurations of the multi-stream buffer have been tested. Configurations up to 64 streams with four read ports meet timing with an AFU request-to-response latency of five cycles. The largest configuration with 64 streams and eight read ports fails timing. Limiting factors are the inherent architecture of FPGAs, where memories are physically located in specific columns. This makes extracting data complex, especially at the target frequencies of \SI{200}{\mega\hertz} and \SI{400}{\mega\hertz}. Wires are scattered across the FPGA and wire delay becomes dominant.
+
+FPGA design at increasing bandwidths requires new design approaches. Synthesis results are no guarantee for the implemented design, and depending on the design size, could indicate a very optimistic operating frequency. Therefore, designing accelerators to keep up with an order of magnitude more bandwidth compared to the current state-of-the-art is complex, and requires carefully thought out accelerator cores, combined with an interface capable of feeding it.
+
+
+
+%CPU performance is reaching a plateau, which pushes the adoption of heterogeneous system architectures. Attaching compute resources such as GPUs and FPGAs, but also network and storage, requires an increase in IO bandwidth. The implications of such a change on FPGA design are of interest, in particular in conjunction with the OpenCAPI interconnect standard.\\
+
+
+%\todo{IBM BOE talk questions:\\
+%- use these slides as inspiration as well.\\
+%- why not use a cache instead of your buffer? Would a cache benefit? For example, if it was already present?\\
+%- How about security? Enterprise requires high security (Wolfgang Maier). A solution could be to place an encryption engine before the actual AFU.\\
+%- if we would change system architecture and go to emerging memory technologies, how would this impact your module/design? (wolfgang)\\
+%}
+
+%Hercules and the Hydra as front cover. Hercules represents a lone engineer, confronted with a multi-facetted problem. But the multiple heads also represent the multiple read ports of the buffer, which have to be fed with data.\\
+%Read the actual myth and see if I can link the story more to the thesis. \url{https://en.wikipedia.org/wiki/Lernaean_Hydra}
+
+
+%\todo{Thesis outline according to Peter @ 17th July (keep it for future reference)\\
+%Intro\\
+%- Technology trends -> accelerators -> cost of accelerator versus cost of feeding it data (very important!)\\
+%- interconnect trends, bandwidth, coherence/memory sharing\\
+%- aim of the thesis / contributions\\
+
+%Ch 1\\
+%- Accelerator types (classification according to memory access)\\
+%- Streaming accelerators (not trivial, show sorter as an example)\\
+%-- sorter example: streaming is difficult with more and more streams. also reading across cache line boundary is difficult.\\
+%-- why does naive implementation not work?\\
+%- OpenCAPI/FPGA characteristics (maybe in chapter 2)\\
+
+%Ch 2\\
+%- Specification / Implementation (design choices \& Andy's design methodology)\\
+
+%Ch 3\\
+%Variations and Generalizations (read-only caches) / analysis\\
+%For examples of variations, see picture I took of the white board.\\
+%A variation could be to have 32 streams instead of 64 but each stream (both in L1 and L2) can buffer twice as much cache lines. Might %be interesting when the AFU hits one stream at a time.\\
+%For the analysis part here; maybe a trace is interesting but more interested in principles. Use formulas.\\
+
+%5Ch Conclusions etc\\
+
+%Other notes from meeting:\\
+%- Repeating throughout the thesis should be: streaming, spatial/temporal locality, random access.\\
+%- Cost of FPGAs is not in functional unit but in getting data there.\\
+%- Talk about granularity both on the OpenCAPI and AFU rd port side.\\
+%- streaming is an extreme case of spatial locality\\
+%- granularity was much harder than one might expect in this thesis.\\
+%- If you would ignore the granularity, then you would have a 128B cache line at the AFU. What will you do with that? Smaller %granularity is needed.\\
+%- Check presentations folder on Google Drive as well.\\
+%}

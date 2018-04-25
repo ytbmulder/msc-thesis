@@ -1,0 +1,182 @@
+\documentclass[a4paper, 11pt]{memoir}
+\RequirePackage{fullpage}
+\RequirePackage[pass]{geometry}
+\RequirePackage{hyperref}
+\RequirePackage{mathtools}
+%\RequirePackage{float}
+  \setcounter{secnumdepth}{2} % seting level of numbering (default for "report" is 3). With ''-1'' you have non number also for chapters
+  \setcounter{tocdepth}{2} % if you want all the levels in your table of contents
+\RequirePackage{todonotes}
+%\RequirePackage[disable]{todonotes}
+  \let\Oldtodo\todo
+  \renewcommand{\todo}[1]{\Oldtodo[inline]{#1}}
+\RequirePackage{graphicx} % for images
+  \graphicspath{{./figures/}}
+\RequirePackage{subcaption}
+\RequirePackage[binary-units=true]{siunitx}
+  \sisetup{per-mode=symbol} % to print GB/s instead of GBs^(-1)
+\RequirePackage{multirow}
+%\RequirePackage{floatrow} % for subfigure vertical alignment.
+
+  \newsavebox{\tempbox} % for aligning subfigures
+
+  % parskip package does not work for memoir class
+  \nonzeroparskip
+  \setlength{\parindent}{0pt}
+\RequirePackage[]{hyphenat} %\nohyphenation
+
+\RequirePackage[hang]{footmisc} % for multiline footnote alignment
+  \setlength\footnotemargin{10pt}
+
+% since im not using the IEEEtran document style, this is needed to get \bstctlcite{} to work.
+% https://tex.stackexchange.com/questions/16506/bibliography-author-initial-spacing
+  \makeatletter
+  \def\bstctlcite{\@ifnextchar[{\@bstctlcite}{\@bstctlcite[@auxout]}}
+  \def\@bstctlcite[#1]#2{\@bsphack
+    \@for\@citeb:=#2\do{%
+      \edef\@citeb{\expandafter\@firstofone\@citeb}%
+      \if@filesw\immediate\write\csname #1\endcsname{\string\citation{\@citeb}}\fi}%
+    \@esphack}
+  \makeatother
+
+\usepackage{mathpazo}
+%\usepackage[sc,osf]{mathpazo}
+\RequirePackage{fontspec}
+  \setmonofont{Menlo-Regular.ttf}[Scale=MatchLowercase]
+
+% Listing and specifics for Verilog highlighting.
+% Highlight-to-color source: https://github.com/atom/one-dark-syntax/blob/master/styles/syntax-variables.less
+% Color-to-HSL source: https://github.com/atom/one-dark-syntax/blob/master/styles/colors.less
+% HSL-to-RGB source: https://www.rapidtables.com/convert/color/hsl-to-rgb.html
+\usepackage{listings}
+% From DARK theme.
+%\definecolor{hue-3}{RGB}{198,120,221} %purple
+%\definecolor{hue-6}{RGB}{209,154,102} %orange
+%\definecolor{hue-6-2}{RGB}{229,192,123} %orange
+%\definecolor{bg}{RGB}{40,44,52} %background
+%\definecolor{fg}{RGB}{171,178,191} %text foreground
+
+% From LIGHT theme
+\definecolor{hue-1}{RGB}{1,132,188} %cyan
+\definecolor{hue-3}{RGB}{166,38,164} %purple
+\definecolor{hue-6}{RGB}{152,104,1} %orange 1
+\definecolor{bg}{RGB}{250,250,250} %background
+\definecolor{fg}{RGB}{56,58,66} %text foreground
+
+\newcommand*{\FormatDigit}[1]{\textcolor{hue-6}{#1}}
+
+\lstdefinestyle{verilog-style}
+{
+    language=Verilog,
+    captionpos=b, % caption at bottom
+  %  backgroundcolor = \color{bg},
+    basicstyle=\small\ttfamily\color{fg},
+    keywordstyle=\color{hue-3},
+    keywordsprefix=\$,alsoletter=\$,
+    identifierstyle=\color{fg},
+    commentstyle=\color{green},
+    numbers=left,
+    numberstyle=\tiny\color{black}\ttfamily, % line number style
+    numbersep=10pt,
+    tabsize=2,
+    frame=single, % frame around code
+    rulecolor=\color{fg}, % color of frame TODO: depends on if LIGHT or DARK theme is used.
+    keepspaces=true, % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+literate={0}{{\FormatDigit{0}}}{1}%
+     {1}{{\FormatDigit{1}}}{1}%
+     {2}{{\FormatDigit{2}}}{1}%
+     {3}{{\FormatDigit{3}}}{1}%
+     {4}{{\FormatDigit{4}}}{1}%
+     {5}{{\FormatDigit{5}}}{1}%
+     {6}{{\FormatDigit{6}}}{1}%
+     {7}{{\FormatDigit{7}}}{1}%
+     {8}{{\FormatDigit{8}}}{1}%
+     {9}{{\FormatDigit{9}}}{1}%
+     {.0}{{\FormatDigit{.0}}}{2}% Following is to ensure that only periods
+     {.1}{{\FormatDigit{.1}}}{2}% followed by a digit are changed.
+     {.2}{{\FormatDigit{.2}}}{2}%
+     {.3}{{\FormatDigit{.3}}}{2}%
+     {.4}{{\FormatDigit{.4}}}{2}%
+     {.5}{{\FormatDigit{.5}}}{2}%
+     {.6}{{\FormatDigit{.6}}}{2}%
+     {.7}{{\FormatDigit{.7}}}{2}%
+     {.8}{{\FormatDigit{.8}}}{2}%
+     {.9}{{\FormatDigit{.9}}}{2}%
+     %{,}{{\FormatDigit{,}}{1}% depends if you want the "," in color
+     {\ }{{ }}{1}% handle the space
+}
+
+% Source: https://tex.stackexchange.com/questions/42961/adding-a-highlight-to-texttt-blocks
+\usepackage{xcolor}
+\usepackage{soul}
+
+\definecolor{Light}{gray}{.90}
+\sethlcolor{Light}
+
+\let\OldTexttt\texttt
+\renewcommand{\texttt}[1]{\OldTexttt{\hl{#1}}}% will affect all \texttt
+%\newcommand{\hltexttt}[1]{\texttt{\hl{#1}}}% comment above \renewcommand if want this
+
+
+
+% https://tex.stackexchange.com/questions/23726/error-in-memoir-command-newfloat-already-defined
+\let\newfloat\undefined
+\usepackage{floatrow}
+\usepackage{fancybox}
+\captionsetup[subfigure]{labelformat=parens,labelsep=space}
+%\floatsetup{style=plain,valign=c}
+\DeclareColorBox{yellowplate}{\colorbox{white}} \floatsetup{style=plain,framestyle=colorbox,
+        framearound=row,colorframeset=yellowplate,frameset={\fboxrule0pt},
+        framestyle=colorbox,framefit=yes,heightadjust=object,valign=c}
+\floatsetup[table]{style=plaintop}
+
+
+
+
+\begin{document}
+  \bstctlcite{IEEEexample:BSTcontrol} % needed for the control entry in the bib to work.
+  
+  \cleardoublepage
+  \include{chapters/0-front}
+  \cleardoublepage
+  \include{chapters/0-full}
+  %\cleardoublepage
+  %\include{chapters/0-thanks}
+
+  %\include{chapters/0-title}
+  
+  \include{chapters/0-abstract}
+  \cleardoublepage
+  
+  \include{chapters/0-preface}
+  \cleardoublepage
+
+  \tableofcontents* % The '*' removes the self-reference of 'Contents'.
+  \newpage
+  \listoffigures
+  \newpage
+  \listoftables
+  \lstlistoflistings
+
+  \include{chapters/1-introduction}
+  \include{chapters/2-trends}
+  \include{chapters/3-interconnects}
+  \include{chapters/4-opencapi}
+  \include{chapters/5-requirements}
+  \include{chapters/6-methods}
+  \include{chapters/7-implementation}
+  \include{chapters/8-results}
+%  \include{chapters/9-variations}
+  \include{chapters/10-conclusions}
+
+%  \include{chapters/5-exploration}
+%  \include{chapters/6-choices}
+
+%  \chapter{Appendix}
+%  \todo{verification and design results}
+
+  %\nocite{*} % causes all entries of the chosen bibliographical database to be included in the list of references
+  \bibliographystyle{IEEEtran}
+  \bibliography{IEEEabrv,bibliography}
+
+\end{document}

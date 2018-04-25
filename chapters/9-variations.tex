@@ -1,0 +1,26 @@
+\chapter{Variations and Generalisations}
+
+\todo{- several variations of the current design and the implications / use-cases
+- generalisations if the current design would be extended to a cache-like architecture
+}
+
+\todo{peter comment during call on 18 september:\\
+- generalisations part; there is a continuum between making observations, outlining future work, actually solving something
+}
+
+\todo{- opencapi returns data out of order. now we reorder before L2, but you could make everything out of order.}
+
+\todo{- variations and generalisations chapter: show that multiple streams could also be used for strided access or other patterns i generalized over.\\
+- out of order execution of reads/writes to not stall and keep up with the bandwidth\\
+- multiple read ports allow for multiple AFU engines to work concurrently. use decompress-filter use case as example. also think about other ways of using 8 read ports, see slides for IBM.\\
+- variation is to use multiple independent operations on the same FPGA. then multiple streams are also needed. for example, half of the streams for AFU 0 and the rest for AFU 1.\\
+- you can extend the read ports to more than eight as well, lets call them virtual read ports, by adding arbitration logic.\\
+}
+
+\todo{- partition the FPGA as multiple different accelerators. need multiple streams to feed them concurrently.\\
+- interested in the interface, not the partition of compute of the AFU.\\
+- interesting to explore how the different architectures can be serviced with this interface in variations chapter.\\
+  - example is different AFUs on same FPGA. requires multiple streams\\
+  - variation is also to implement single stream, then interface is like a DMA with cache line granularity, but possibility to read across a cache line boundary.\\
+  - pipeline compute on FPGA is also option, but doesn't change anything for interface.\\
+}

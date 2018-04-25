@@ -1,0 +1,31 @@
+\chapter{Design Space Exploration and Constraining}
+
+\todo{Future work regarding WED (programming model):\\
+- Since the notion of a WED does no longer exist as part of the architecture for OpenCAPI 3.0, I have to assess what the best/most general way is to do this. WEDs are still in use, for example memcpy3.0. Joerg-Stephan mentioned that when working on SNAP, they got feedback that a work queue is not necessarily the best for all cases. Therefor they went with MMIO space per process to store a WED instead. Concept of a work queue still appeals to me, but we have to see when it is useful and if we should support both a queue and per process MMIO WED allocation.\\
+- joerg-stephan note regarding work queue in CAPI:
+Working on SNAP we got the feedback that a workqueue with jobs is not always the right way to operate. It's ok for offload operations (get work from host memory, run the accelerated logic, put work back to host memory). It doesn't work for a real co-processing where the FPGA keeps working on a job virtually forever, while data on the host keeps changing - just like two threads would interoperate using semaphores.
+It also doesn't work for real streaming data, e.g. from network or a surveillance camera. There is not time- or data-limited kind of "job" that could be time-sliced.
+}
+
+
+
+\subsection{BRAM Exploration}
+The KU15P has a total size of 34.6 Mb of BRAM. Each BRAM is 36 kb. To determine the exact amount of bits that are available on the KU15P, we know that a single BRAM can be configured as $512x72b = 36864b$. If there are 940 BRAMs present, we end up with a total of $36864b * 940 = 34652160b$, which is the real amount of bits available.\\
+Assuming we can run a single BRAM at 400 MHz and double pump the selection MUXes afterwards, we can double pump the MUXes and read $2*8B = 16B = $ a single element from each BRAM (configured as 512x72b) per cycle. To build a single cache line of 128B from these BRAMs, we need $128B / 16B = 8$ of them. Then each stream cache will have 256 cache lines, each of 128B.\\
+We want the AFU to also have access to BRAMs, so we limit the APL to use roughly half of the available BRAMs, which is $940/2 = 470$. The maximum amount of stream caches we can build is $470 / 8 = 58.75$, thus 64 stream caches would use 512 BRAMs, which is $54.5\%$. In this calculation, RAM for the tag is not taken into account.
+
+\todo{- if an element cache was element-writable, you could replace an element when it was read instead of waiting for a whole cache line to be read and to be replaced. The trade-off is then that you will need a tag ram for every element cache instead of one tag cache per slice.\\
+- TDP BRAM will not solve anything, since the data will be duplicated in order to read and write simultaneously. Thus the effective storage is only half. So that means twice as many BRAMs and the possibility for a stall. Therefore SDP is currently okay if we have two or more tiles, since then the URAMs can provide new cache lines to the BRAMs while reading another set of BRAMs.\\
+- motivate why TDP BRAM is not used. because the only problem it solves is read and write to the same memory location. that will not happen if you organize the read and write access properly and due to the read write imbalance (128B by opencapi distributed to only one out of 64 streams to 128B from any combination of 8 streams). TDP also reduces usable memory capacity by half. Thus twice as many BRAMs are needed.\\
+- instead of double pumping, you could write one half-cycle and read in the other half-cycle. However, since OpenCAPI only provides 128B/cycle, this would be twice as many BRAMs without any real performance increase, because of the write/read imbalance.\\
+}
+
+\section{Cache Exploration}
+\todo{- The idea is to make the hit time of L1 and miss rate of L2 as low as possible.\\
+- For better throughput on a miss, you should use a non-blocking cache. Basically there are two variants but the newer one is only limited by the hardware queue to store the details of a miss until it is fetched from main memory. However it is more complex and requires additional RAM (distributed in this case, since other other types of RAM on the FPGA have a fixed size and you would waste resources in that case).\\
+- AFU reading data has priority. therefore we only build a read cache. writing back to main memory is done using a write buffer.\\
+- there is write buffer because of the write amplification. if we write back one element of 16B at a time, we have an amplification factor of 8, since to write back this element, we actually have to write back a whole cache line of 128B (thus 128B / 16B = 8). this is called write amplification, when you want to write back for example 16B and the cache line is 128B, then you have to write 8 times as much compared to your useful data. this is called a write amplification factor of 8. \url{https://en.wikipedia.org/wiki/Write_amplification}.\\
+- for writing back to main mem, have write buffer per stream for example, each having space for two cache lines, since you can write back 8 elements for example thus can cross cache line boundary. however, depending on the behavior of the accelerator, different write back buffers might be used. for example, the merge-sort will write back as one sorted stream, while the decompressor will not.\\
+- cache performance metrics: \url{https://en.wikipedia.org/wiki/Cache_performance_measurement_and_metric}.\\
+- before presenting the actual design of the data path for example (but holds for all parts), show the naive implementation and show why it does not work. In the case of the data path, why not buffer 2 lines per stream and call it a day? Because you can't supply 8 read ports simultaneously with the requested data element. Well, you can but there is a very large MUXing structure (I believe 1024:1) in order to get any element to any read port. Therefor splitting the design in L1 and L2 and duplicating data in L1 is the way to go. A side effect of the naive implementation is using all BRAMs, or at least a significat portion depending on the amount of streams you want to buffer. Make a drawing of this naive design as well.
+}

@@ -1,0 +1,62 @@
+\chapter{Introduction}
+\label{sec:intro}
+
+In recent years, data centers have been forced to embrace heterogeneous system architectures. As microprocessor technology and design is not able to deliver cost per performance improvements in line with historical rates, deployment of hardware acceleration will become commonplace.
+
+% - increase in bandwidth changes design methodologies / approaches.
+Trends in system architecture show that interconnect bandwidth is significantly increasing in order to provide data centers with the connectivity and ability to attach accelerators for any workload. Traditionally FPGAs (Field Programmable Gate Arrays) lacked bandwidth and programmability and could only be used for the most computationally intensive tasks, but recent advancements target these shortcomings and accelerate adoption. While the change in programming models is an interesting field of study, this thesis focuses on the emerging FPGAs with main memory class bandwidth enabled by such advancements. This change requires re-evaluation of our current design approaches and methodologies for accelerators. It does not only pose a challenge for accelerator design, but also for providing them with data. New interface logic is required to feed the accelerators, and new accelerator cores are needed, at least in those cases where the problem is not trivially parallel.
+
+%Hardware accelerators are located inside the CPU package or attached externally and include ASICs, FPGAs and (GP)GPUs. Each type of accelerator excels at a specific type of workload in terms of flexibility and power efficiency. The most commonly used accelerator is the GPGPU, since it is applicable to a wide range of workloads such as analytics, computational science and machine learning. However, not all types of workloads map efficiently on a CPU or GPU. Therefore, ASICs and FPGAs are gaining popularity for certain workloads due to the order of magnitude increase in energy efficiency compared to CPUs and GPUs. Mostly compute-intensive workloads are suitable since the desired algorithm can be implemented as a fixed set of transformations on the input data. On the contrary, memory-intensive workloads suffer from a two-fold interconnect bottleneck between the CPU and attached accelerator. On one hand, the bandwidth is an order of magnitude less compared to system memory. On the other hand, accelerators are difficult to program due to the separate address space and are forced to copy through main memory. Finally, driver overhead increases latency.\\
+%However, recent advancements in interconnect standards and the increase in bandwidth that comes with it enables these accelerators to be used for memory-intensive workloads as well and improves programmability significantly by providing a shared address space which makes accelerators act as peers to other processor cores. These advancements are essential in the data center of tomorrow.
+
+% - Why streaming / multi-stream?
+A common memory access pattern for FPGA accelerators is streaming and examples include content delivery, cryptography and databases. An interface capable of handling multiple streams is desired because workloads exist that inherently use multiple streams or for which multiple single-stream engines are required to work in parallel in order to exploit all of the available bandwidth. Besides that, sustaining throughput is more difficult when using a single stream. Multiple streams can more easily keep the interconnect fully utilized since concurrent requests can be made. Partitioning the compute is left to the accelerator designer.
+
+% - Previous work will not suffice.
+Previous work such as the Streaming Framework \cite{brobbel-github, brobbel-slides} and SNAP (Storage, Networking, and Analytics Programming) Framework \cite{snap-github, snap-slides} for CAPI (Coherent Accelerator Processor Interface) 1.0 will not suffice, since these frameworks are not capable of handling this class of bandwidth, nor the number of streams. The frameworks target a bandwidth that is an order of magnitude smaller compared to OpenCAPI. SNAP also uses the coherent cache present in CAPI 1.0, but not present in OpenCAPI. Therefore a direct port is not trivial.
+
+%\todo{
+%- Add that previous work uses cache line granularity data interface (Brobbel 128B, SNAP 250MHz 512b AXI). This might be too large for certain workloads.
+%}
+
+
+
+
+\newpage
+\section{Thesis Aim}
+\label{sec:aim}
+To combine both efforts of re-evaluating the interface and accelerator engine design, this thesis is part of a larger project, in collaboration with three other master students \cite{huang-msc-thesis, yang-msc-thesis, zeng-msc-thesis}, that focuses on accelerator core design. A harmonized effort is made by studying a re-emerging and inherently multi-stream workload: database operators. Preliminary findings have been presented at the H\textsuperscript{2}RC 2017 workshop \cite{h2rc}.
+
+Database systems have been looking for architectures that achieve a high bandwidth to access the required data. FPGA acceleration was used in the past, but a recent trend is the usage of in-memory databases. In such systems, the database is located in host memory instead of on flash or mechanical storage. Now that interfaces like OpenCAPI are approaching host memory-like bandwidths and have coherent memory access, accelerating database operators using FPGAs by means of low latency memory access becomes relevant again.
+
+The three other master students are also under supervision of Prof. Dr. H. Peter Hofstee. They will study three different multi-stream accelerators for database operators. The studied operators are: Decompress-Filter, Merge-Sort and Hash-Join.
+%Each student will study one of the following database operators.
+%\begin{itemize}
+%  \item{\textbf{Decompress-filter} decompress incoming data and apply a filter to ideally obtain less data than was provided.}
+%  \item{\textbf{Merge-sort} merge multiple pre-sorted streams of data and provide one sorted output stream.}
+%  \item{\textbf{Hash-join} x.}
+%\end{itemize}
+
+The aim of this thesis is to study the implications of emerging high-bandwidth interconnects for FPGA accelerators, but more importantly their interface. Feeding accelerators with data and keeping up with the increased bandwidth is challenging. Prerequisite are multiple streams and read ports with less than cache line granularity. Providing such an interface is not trivial at this bandwidth. Therefore, the focus is on getting the data to the FPGA. Writing results back to the host is left as future work.
+
+
+
+
+
+\section{Thesis Contributions}
+The aims are to generalize across several common FPGA memory access patterns and to design and implement an interface that can be generally applicable to current and future high-bandwidth interconnects. Supplying a general interface to the FPGA designer will improve adoption and accelerate the design cycle. The contributions made in this thesis can be summarized as follows.
+\begin{itemize}
+  \item{A study of a new class of accelerator interfaces, and a more detailed overview of OpenCAPI (the first of its kind).}
+  \item{Re-evaluation of design methodologies for high-bandwidth attached FPGAs.}
+  \item{Provide documentation and examples for a delay-insensitive design methodology provided by Andrew K. Martin.}
+  \item{A multi-level buffer architecture proposal and implementation, aware of fixed-size memory resources found on FPGAs, by exploiting features of different memory primitives and state-of-the-art memory resources.}
+  \item{Improve adoption of high-bandwidth interconnect, with a special interest in OpenCAPI, attached streaming-based accelerators by providing a generalized and reconfigurable interface. This interface supports multiple streams and access patterns in order to be widely used while keeping up with the bandwidth.}
+\end{itemize}
+
+
+
+
+
+\section{Thesis Organization}
+Chapter 2 describes technology trends with respect to system level bandwidth requirements and interconnect standards. Chapter 3 takes a brief look at the state-of-the-art interconnect standards and what sets them apart. Chapter 4 characterizes OpenCAPI, the POWER9 processor and future OpenCAPI-compatible Xilinx FPGAs. Chapter 5 takes a look at common accelerator memory access patterns and shows naive buffer designs for full-utilization of the available interconnect bandwidth. Chapter 6 introduces the \textit{Delay Insensitive Cell Library} which accelerates FPGA design by providing cells with a built-in ready-valid protocol. Chapter 7 combines the previous chapters and motivates the design choices made for a multi-stream buffer and highlights the essential modules of the design. Chapter 8 shows the validation setup, performance, and implementation results, and Chapter 9 concludes the thesis.
+%presents variations and generalizations based on the final design and Chapter 10 concludes the thesis.
