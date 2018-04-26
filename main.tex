@@ -41,8 +41,8 @@
 
 \usepackage{mathpazo}
 %\usepackage[sc,osf]{mathpazo}
-\RequirePackage{fontspec}
-  \setmonofont{Menlo-Regular.ttf}[Scale=MatchLowercase]
+%\RequirePackage{fontspec}
+  %\setmonofont{Menlo-Regular.ttf}[Scale=MatchLowercase]
 
 % Listing and specifics for Verilog highlighting.
 % Highlight-to-color source: https://github.com/atom/one-dark-syntax/blob/master/styles/syntax-variables.less
@@ -144,10 +144,10 @@ literate={0}{{\FormatDigit{0}}}{1}%
   %\include{chapters/0-thanks}
 
   %\include{chapters/0-title}
-  
+
   \include{chapters/0-abstract}
   \cleardoublepage
-  
+
   \include{chapters/0-preface}
   \cleardoublepage
 
@@ -157,6 +157,19 @@ literate={0}{{\FormatDigit{0}}}{1}%
   \newpage
   \listoftables
   \lstlistoflistings
+
+  \chapter*{Revision Log}
+  \addcontentsline{toc}{chapter}{Revision Log}
+  The revision log keeps track of all significant changes that have been made to this thesis since the initial public release on the 29th of January 2018. The most recent version of this document can be found at \url{https://github.com/ytbmulder/msc-thesis}.
+
+  \begin{table}[H]
+    \centering
+    \begin{tabular}{ p{1.5cm} | p{3.5cm} | p{9.6cm} }
+      \textbf{Version} & \textbf{Revision Date} & \textbf{Description} \\ \hline
+      v1.0.0 & 29 January 2018 & Initial public release. \\
+      v1.0.1 & 26 April 2018   & Addition of this revision log. \\
+    \end{tabular}
+  \end{table}
 
   \include{chapters/1-introduction}
   \include{chapters/2-trends}
