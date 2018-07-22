@@ -91,7 +91,7 @@ The moment the energy to switch a single transistor does no longer decrease in a
 
 \subsection{Heterogeneous Multi-Core Systems}
 \label{sec:hetero}
-By applying a simple hardware model to Amdahl's Law, it is shown that a system with asymmetric cores can always achieve a higher maximum speedup than a system with homogeneous cores \cite{amdahl-era}. 
+By applying a simple hardware model to Amdahl's Law, it is shown that a system with asymmetric cores can always achieve a higher maximum speedup than a system with homogeneous cores \cite{amdahl-era}.
 %Amdahl's Law implies that to speed up real workloads, consisting of serial and parallel portions, a heterogeneous system is required.\\
 Typically, FPGAs and GPUs are used to improve parallel workloads, but in rare cases can also improve sequential workloads.\\
 
@@ -134,7 +134,7 @@ The downside is that an FPGA consists of various pre-defined resources, like mem
 \subsection{FPGA Adoption in the Data Center}
 \label{sec:adopt}
 FPGAs are becoming more interesting for specific workloads in the data center for various reasons. The (re)configurability allows for reuse and on-the-fly adaptation.
-%, FPGAs have been shown to outperform other types of compute resources in terms of operations per byte for specific workloads. 
+%, FPGAs have been shown to outperform other types of compute resources in terms of operations per byte for specific workloads.
 In addition, FPGAs are more power efficient than other compute resources. This aspects becomes increasingly important for data center operators to keep the TCO down. Traditional limitations of FPGAs are starting to fade away with recent advancements in interconnect standards and system design.
 
 \begin{itemize}
@@ -179,14 +179,16 @@ In this section, the two typical drawbacks of FPGA adoption are explored in more
 %- network: find study of what percentage of network bw is used by which applications.\\
 %- network: besides ethernet bw increasing from 10, to 100 to soon 400 Gb/s, how does inifiniband and others fit in? Infiniband is only within or between servers. Not like ethernet.\\
 
-Besides the adoption of various kinds of accelerators in the data center, the balance of bandwidths at system-level have changed significantly in recent years. Advancements in networking and storage result in increased bandwidth requirements of such devices. With the increase in complexity and volume of data center workloads, there is never enough or fast enough storage available. 
+Besides the adoption of various kinds of accelerators in the data center, the balance of bandwidths at system-level have changed significantly in recent years. Advancements in networking and storage result in increased bandwidth requirements of such devices. With the increase in complexity and volume of data center workloads, there is never enough or fast enough storage available.
 Emerging workloads, such as big data and machine learning, using data sets in the order of exabytes ($10^{18}$), are good examples of this \cite{teradata}.
-%According to EMC\textsuperscript{2}, by 2020 about \SI{1.7}{\mega\byte} of data will be created every second per human \cite{big-data}. 
+%According to EMC\textsuperscript{2}, by 2020 about \SI{1.7}{\mega\byte} of data will be created every second per human \cite{big-data}.
 Therefore, new storage protocols are quickly adopted, with NVMe over PCI Express being the latest achieving bandwidths of several gigabytes per device. The previous generation reached only half a gigabyte at best. Network bandwidths are increasing similarly by quick adoption of both the \SI{100}{\giga\bit\per\second} and \SI{400}{\giga\bit\per\second} standards in only a few years time. With more and more data and services moving to the cloud, network bandwidths have to increase rapidly.
 
 
 
 \subsection{Bandwidth Trends at Device-Level}
+\todo{Ref to Figure 2.1a and 2.1b is incorrect.}
+
 Fritz Kruger, a SanDisk Fellow, collected data regarding DRAM, network and storage bandwidth for a presentation in 2016 and predicted the future until 2020. \autoref{fig:1-fritz} shows his findings, with the addition of PCI Express bandwidth to act as a proxy for interconnect bandwidth. For each generation of the PCI Express standard, the bandwidth of sixteen lanes is plotted, since this is typically the maximum number of lanes per PCI Express device. DRAM is inherently uni-directional and several cycles are required to turn the channel around. A memory controller takes care of this by combining reads and writes to limit the overhead cycles spent in configuring the channel. Therefore, DRAM bandwidth should be interpreted as either a read or write channel with the plotted bandwidth, while attached devices such as network and storage typically have a bi-directional link.\\
 The slope of each of the fitted lines is important here. Clearly, both network and storage bandwidths are increasing at a much faster rate (steeper slope) than DRAM and PCI Express. The network and storage slopes are similar and double every 18 months. PCI Express doubles every 48 months while it takes DRAM 84 months to double in bandwidth. A shift in system balance is expected for future systems where DRAM, interconnect, network and storage bandwidth are about the same.\\
 The fitted straight lines for each of the four data sets shown in \autoref{fig:1-fritz-bw-log} indicate exponential behavior, which can be clearly seen in \autoref{fig:1-fritz-bw}. This figure shows exactly the same data, but on a linear y-axis instead. While it might look like accelerators, such as GPUs and FPGAs, will have to compete for interconnect bandwidth with network and storage, vendors can always scale memory and interconnect bandwidth accordingly. While scaling is the trend, as becomes apparent from the next paragraph, and works in the short-term, it does not solve the fundamental problem of lacking DRAM bandwidth improvements.\\
@@ -227,7 +229,7 @@ The reason that DRAM bandwidth is not increasing at a similar pace is two fold. 
       {\includegraphics[width=1.0\linewidth]{1-fritz-bw.pdf}}
     \end{floatrow}%
   }
-  {\caption[Bandwidth at device-level trends Fritz reference.]{Bandwidth trends at device-level \cite{fritz}\footnotemark.}\label{fig:1-fritz}}
+  {\caption[Bandwidth trends at device-level \cite{fritz}.]{Bandwidth trends at device-level \cite{fritz}\footnotemark.}\label{fig:1-fritz}}
 \end{figure}
 \footnotetext{Data points were approximated from the referenced figures in order to add the PCI Express standard bandwidth and represent all bandwidths in GB/s.}
 
@@ -342,7 +344,7 @@ Another bottleneck, illustrated by \autoref{fig:2-memcpy}, is the host memory ba
 \subsubsection{Case Study: IBM POWER9}
 To illustrate the problem of host memory congestion, the IBM POWER9 processor is chosen as an extreme example. It supports two new high-bandwidth interconnect standards: PCI Express Gen 4 and OpenCAPI. \autoref{fig:2-system-1} shows a hypothetical system architecture where host memory, an accelerator (ASIC, FPGA or GPU), and a network and storage controller are attached to the CPU.\\
 A possible system configuration could have host memory attached with \SI{200}{\giga\byte\per\second} of bandwidth and each attached device with roughly \SI{150}{\giga\byte\per\second} of bandwidth. Using the traditional IO model, the IO devices will be fighting for access to the system memory channel. \SI{450}{\giga\byte\per\second} of data is competing for the same \SI{150}{\giga\byte\per\second} memory channel, since data exchange happens by copying through memory.
-%Even worse, if all \SI{492}{\giga\byte\per\second} of IO bandwidth is utilized, multiple copy operations have to be serviced by the host memory which has a bandwidth of up to \SI{230}{\giga\byte\per\second}, depending on the configuration (alternative configurations could only have \SI{120}{\giga\byte\per\second} of bandwidth). 
+%Even worse, if all \SI{492}{\giga\byte\per\second} of IO bandwidth is utilized, multiple copy operations have to be serviced by the host memory which has a bandwidth of up to \SI{230}{\giga\byte\per\second}, depending on the configuration (alternative configurations could only have \SI{120}{\giga\byte\per\second} of bandwidth).
 Imagine that in this example, memory access requested by the CPU is not even taken into account. The host memory would seriously bottleneck the whole system in this case, as shown in \autoref{fig:2-system-2} where the thick arrows indicate data transfers.\\
 A system configuration like this would not be possible with a traditional IO model. The \SI{300}{\giga\byte\per\second} of bandwidth that OpenCAPI provides mitigates the presented bottlenecks by introducing a coherent and shared memory access model to host memory.
 
