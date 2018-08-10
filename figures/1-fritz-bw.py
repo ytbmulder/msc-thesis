@@ -30,45 +30,11 @@ location = os.path.join(base_path, "1-fritz-bw-dram.csv")
 data = np.genfromtxt(location, delimiter=',', names=['year', 'bw'])
 ax.plot(data['year'], data['bw'], 'go-', label="DRAM BW / CPU socket", markersize=4)
 
-# Linear fit.
-#x = data['year']
-#y = data['bw']
-#y_ln = np.log10(y)
-
-#n = data.shape[0]
-#A = np.array(([[x[j], 1] for j in range(n)]))
-#B = np.array(y_ln[0:n])
-#B = np.array(y[0:n])
-
-#X = np.linalg.lstsq(A, B)[0]
-#a = X[0]
-#b = X[1]
-
-#fit = a * x + b
-
-
-
-#p = np.polyfit(x, np.log(y), 1)
-#ax.semilogy(x, p[0] * x + p[1], 'g--')
-
-
-
-
-# fit 2
-#A = np.vstack([x, np.ones(len(x))]).T
-#print(A)
-#m, c = np.linalg.lstsq(A, np.log(y))[0]
-#print(m, c)
-#ax.plot(x, m*x + c, 'g--')
-
-
-
 # Plot Network bandwidth in GB/s.
 location = os.path.join(base_path, "1-fritz-bw-net.csv")
 data = np.genfromtxt(location, delimiter=',', names=['year', 'bw'])
 ax.plot(data['year'], data['bw']/1000, 'ro-', label="Network BW / cable", markersize=4)
 
-# TODO: move pcie gen 5 to 2020.
 # Plot PCIe bandwidth in GB/s for x16 slots.
 # PCI-X 1.0 and 2.0: [1998, 2003] [1.06, 4.266]
 # OpenCAPI 2018 16*ocapi
@@ -81,37 +47,9 @@ location = os.path.join(base_path, "1-fritz-bw-ssd.csv")
 data = np.genfromtxt(location, delimiter=',', names=['year', 'bw'])
 ax.plot(data['year'], data['bw']/1000, 'bo-', label="Storage BW / device", markersize=4)
 
-#x = data['year']
-#y = data['bw']
-#p = np.polyfit(x, np.log(y), 1)
-#ax.semilogy(x, p[0] * x + p[1], 'b--')
-
-# fit 2
-#A = np.vstack([x, np.ones(len(x))]).T
-#print(A)
-#m, c = np.linalg.lstsq(A, np.log(y))[0]
-#print(m, c)
-#ax.plot(x, m*x + c, 'g--')
-
-# TODO: draw straight line through each data set
-
-### TEST
-# https://docs.scipy.org/doc/numpy/reference/generated/numpy.linalg.lstsq.html#numpy.linalg.lstsq
-#x = np.array([0, 1, 2, 3])
-#y = np.array([-1, 0.2, 0.9, 2.1])
-#y = np.array([1, 10, 100, 1000])
-#A = np.vstack([x, np.ones(len(x))]).T
-#m, c = np.linalg.lstsq(A, y)[0]
-#ax.plot(x, y, 'o', label='Original data', markersize=10)
-#ax.plot(x, m*x + c, 'r', label='Fitted line')
-
-
-
 # Plot setup
-#ax.set_yscale('log')
-#plt.axis([1993, 2022, 0.001, 1000])
-#for axis in [ax.yaxis]: # Custom y tick formatter.
-#  axis.set_major_formatter(matplotlib.ticker.StrMethodFormatter("{x}"))
+axes = plt.gca()
+axes.set_ylim([-5, 120])
 ax.set_xlabel("Year")
 ax.set_ylabel("Bandwidth [GB/s]")
 ax.yaxis.grid(True) #ax.grid()
