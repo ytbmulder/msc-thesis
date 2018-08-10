@@ -1,0 +1,25 @@
+# macOS files:
+.DS_Store
+
+# Latex auxiliary files:
+*.aux
+*.fls
+*.lof
+*.log
+*.lot
+*.out
+*.toc
+*.xdv
+
+# Bibliography auxiliary files:
+*.bbl
+*.blg
+
+# Listing auxiliary files:
+*.lol
+
+# Tool auxiliary files:
+*.fdb_latexmk
+
+# Latex output PDF:
+main.pdf
